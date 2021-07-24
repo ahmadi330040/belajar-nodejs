@@ -15,10 +15,13 @@ app.get('/', (req, res) => {
 })
 
 app.get('/product/:id', (req, res) => {
-	res.send(`product ID : ${req.params.id} <br> category ID : ${req.params.id}`)
+	res.send(
+		`product ID : ${req.params.id} <br> category ID : ${req.query.category}`
+	)
 })
 
 app.use('/', (req, res) => {
+	res.status(404)
 	res.send('<h1>404</h1>')
 })
 
