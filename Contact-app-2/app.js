@@ -1,14 +1,15 @@
 const express = require('express')
 const app = express()
-const { loadContact, findContact } = require('./utils/contacts')
+const { loadContact, findContact, addContact } = require('./utils/contacts')
+const { body, validationResult } = require('express-validator')
 
 const expressLayouts = require('express-ejs-layouts')
 const port = 3000
 
 app.set('view engine', 'ejs') //gunakan ejs
 app.use(expressLayouts) //middleware third party
-app.use(express.static('public')) //Builtin middleware
-app.use(express.urlencoded())
+app.use(express.static('public')) //Built-in middleware
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
 	const mahasiswa = [
@@ -40,11 +41,6 @@ app.get('/about', (req, res) => {
 	})
 })
 
-// Proses data contact
-app.post('/contact', (req, res) => {
-	res.send(req.body)
-})
-
 // Menambah data contact
 app.get('/contact/add', (req, res) => {
 	res.render('add-contact', {
@@ -52,6 +48,20 @@ app.get('/contact/add', (req, res) => {
 		title: 'Halaman Tambah Data',
 	})
 })
+
+// Proses menambah data contact
+app.post(
+	'/contact',
+	[body('email').isEmail(), body('nohp').isMobilePhone()],
+	(req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			return res.status(400).json({ errors: errors.array() })
+		}
+		// addContact(req.body)
+		// res.redirect('/contact')
+	}
+)
 
 // Menampilkan semua data contact di contacts.json
 app.get('/contact', (req, res) => {
