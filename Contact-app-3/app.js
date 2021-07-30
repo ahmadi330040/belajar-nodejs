@@ -136,6 +136,47 @@ app.get('/contact/delete/:nama', (req, res) => {
 	}
 })
 
+// Mengubah contact berdasarkan Nama
+app.get('/contact/edit/:nama', (req, res) => {
+	const contact = findContact(req.params.nama)
+	res.render('edit-contact', {
+		layout: 'layouts/main-layout',
+		title: 'Halaman Edit Contact',
+		contact,
+	})
+})
+
+// Proses Ubah data contact
+app.post(
+	'/contact/update',
+	[
+		body('nama').custom((value) => {
+			const duplikat = cekDuplikat(value)
+			if (duplikat) {
+				throw new Error('Nama Contact sudah digunakan')
+			}
+			return true
+		}),
+		check('email', 'Email tidak valid').isEmail(),
+		check('nohp', 'Nomor hp tidak valid').isMobilePhone('id-ID'),
+	],
+	(req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			// return res.status(400).json({ errors: errors.array() })
+			res.render('edit-contact', {
+				layout: 'layouts/main-layout',
+				title: 'Halaman Tambah Data',
+				errors: errors.array(),
+			})
+		} else {
+			addContact(req.body)
+			req.flash('msg', 'Data contact berhasil datambahkan')
+			res.redirect('/contact')
+		}
+	}
+)
+
 app.use('/', (req, res) => {
 	res.status(404)
 	res.send('<h1>404</h1>')
