@@ -14,7 +14,6 @@ const cookieParser = require('cookie-parser')
 const flash = require('connect-flash')
 
 const expressLayouts = require('express-ejs-layouts')
-const { render } = require('ejs')
 const port = 3000
 
 app.set('view engine', 'ejs') //gunakan ejs
