@@ -6,6 +6,7 @@ const {
 	addContact,
 	cekDuplikat,
 	deleteContact,
+	updateContact,
 } = require('./utils/contacts')
 const { body, validationResult, check } = require('express-validator')
 const session = require('express-session')
@@ -150,9 +151,9 @@ app.get('/contact/edit/:nama', (req, res) => {
 app.post(
 	'/contact/update',
 	[
-		body('nama').custom((value) => {
+		body('nama').custom((value, { req }) => {
 			const duplikat = cekDuplikat(value)
-			if (duplikat) {
+			if (value !== req.body.oldNama && duplikat) {
 				throw new Error('Nama Contact sudah digunakan')
 			}
 			return true
@@ -166,12 +167,13 @@ app.post(
 			// return res.status(400).json({ errors: errors.array() })
 			res.render('edit-contact', {
 				layout: 'layouts/main-layout',
-				title: 'Halaman Tambah Data',
+				title: 'Halaman Ubah Data',
 				errors: errors.array(),
+				contact: req.body,
 			})
 		} else {
-			addContact(req.body)
-			req.flash('msg', 'Data contact berhasil datambahkan')
+			updateContact(req.body)
+			req.flash('msg', 'Data contact berhasil diubah')
 			res.redirect('/contact')
 		}
 	}
