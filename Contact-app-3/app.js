@@ -5,6 +5,7 @@ const {
 	findContact,
 	addContact,
 	cekDuplikat,
+	deleteContact,
 } = require('./utils/contacts')
 const { body, validationResult, check } = require('express-validator')
 const session = require('express-session')
@@ -120,6 +121,19 @@ app.get('/contact/:nama', (req, res) => {
 		title: 'Halaman Contact',
 		contact,
 	})
+})
+
+// Menghapus contact berdasarkan nama
+app.get('/contact/delete/:nama', (req, res) => {
+	const contact = findContact(req.params.nama)
+	// Jika contact tidak ada tampilkan 404
+	if (!contact) {
+		res.status(404), res.send('<h1>404</h1>')
+	} else {
+		deleteContact(req.params.nama)
+		req.flash('msg', 'Data berhasil dihapus')
+		res.redirect('/contact')
+	}
 })
 
 app.use('/', (req, res) => {
