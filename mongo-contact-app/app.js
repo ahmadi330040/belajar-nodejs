@@ -87,7 +87,7 @@ app.get('/contact', async (req, res) => {
 	})
 })
 
-// Halaman Menambah data contact
+// Halaman Menambah data
 app.get('/contact/add', (req, res) => {
 	res.render('add-contact', {
 		layout: 'layouts/main-layout',
@@ -95,7 +95,7 @@ app.get('/contact/add', (req, res) => {
 	})
 })
 
-// Proses menambah data contact
+// Proses menambah data
 app.post(
 	'/contact',
 	[
@@ -126,20 +126,7 @@ app.post(
 	}
 )
 
-// Proses Hapus data contact
-// app.get('/contact/delete/:nama', async (req, res) => {
-// 	const contact = await Contact.findOne({ nama: req.params.nama })
-// 	// Jika contact tidak ada tampilkan 404
-// 	if (!contact) {
-// 		res.status(404), res.send('<h1>404</h1>')
-// 	} else {
-// 		Contact.deleteOne({ _id: contact._id }).then((result) => {
-// 			req.flash('msg', 'Data berhasil dihapus')
-// 			res.redirect('/contact')
-// 		})
-// 	}
-// })
-
+// Proses Hapus data
 app.delete('/contact', (req, res) => {
 	Contact.deleteOne({ nama: req.body.nama }).then((result) => {
 		req.flash('msg', 'Data berhasil dihapus')
@@ -147,15 +134,53 @@ app.delete('/contact', (req, res) => {
 	})
 })
 
-// HalamaUubah contact berdasarkan Nama
+// Halaman Ubah data
 app.get('/contact/edit/:nama', async (req, res) => {
-	const contact = await Contact.findOne(req.params.nama)
+	const contact = await Contact.findOne({nama:req.params.nama})
 	res.render('edit-contact', {
 		layout: 'layouts/main-layout',
 		title: 'Halaman Edit Contact',
 		contact,
 	})
 })
+
+// Proses Ubah data contact
+app.put(
+	'/contact',
+	[
+		body('nama').custom(async(value, { req }) => {
+			const duplikat = await Contact.findOne({nama: value})
+			if (value !== req.body.oldNama && duplikat) {
+				throw new Error('Nama Contact sudah digunakan')
+			}
+			return true
+		}),
+		check('email', 'Email tidak valid').isEmail(),
+		check('nohp', 'Nomor hp tidak valid').isMobilePhone('id-ID'),
+	],
+	(req, res) => {
+		const errors = validationResult(req)
+		if (!errors.isEmpty()) {
+			res.render('edit-contact', {
+				layout: 'layouts/main-layout',
+				title: 'Halaman Ubah Data',
+				errors: errors.array(),
+				contact: req.body,
+			})
+		} else {
+			Contact.updateOne({_id:req.body._id},{
+				$set: {
+					nama: req.body.nama,
+					email: req.body.email,
+					nohp: req.body.nohp,
+				},
+			}).then((result) => {
+				req.flash('msg', 'Data contact berhasil diubah')
+				res.redirect('/contact')
+			})
+		}
+	}
+)
 
 // Halaman Detail
 app.get('/contact/:nama', async (req, res) => {

@@ -13,7 +13,8 @@
             <% } %>
 
             <h2>Form Ubah Data</h2>
-            <form method="post" action="/contact/update">
+            <form method="post" action="/contact?_method=PUT">
+                <input type="hidden" name="_id" value="<%= contact._id %>"> 
                 <input type="hidden" name="oldNama" value="<%= contact.oldNama || contact.nama %>">
                 <div class="mb-3">
                     <label for="nama" class="form-label">Nama</label>
@@ -28,7 +29,7 @@
                     <input type="email" class="form-control" id="email" name="email" required
                         value="<%= contact.email %>">
                 </div>
-                <button type="submit" class="btn btn-primary">Ubah Data</button>
+                <button type="submit" class="btn btn-primary" >Ubah Data</button>
             </form>
         </div>
     </div>
