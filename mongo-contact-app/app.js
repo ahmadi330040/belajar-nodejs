@@ -9,6 +9,7 @@ const flash = require('connect-flash')
 
 require('./utils/db')
 const Contact = require('./model/contact.js')
+const { deleteOne } = require('./model/contact.js')
 
 const app = express()
 const port = 3000
@@ -120,6 +121,20 @@ app.post(
 		}
 	}
 )
+
+// Proses Hapus data contact
+app.get('/contact/delete/:nama', async (req, res) => {
+	const contact = await Contact.findOne({ nama: req.params.nama })
+	// Jika contact tidak ada tampilkan 404
+	if (!contact) {
+		res.status(404), res.send('<h1>404</h1>')
+	} else {
+		Contact.deleteOne({ _id: contact._id }).then((result) => {
+			req.flash('msg', 'Data berhasil dihapus')
+			res.redirect('/contact')
+		})
+	}
+})
 
 // Halaman Detail
 app.get('/contact/:nama', async (req, res) => {
