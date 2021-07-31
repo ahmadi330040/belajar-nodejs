@@ -15,8 +15,13 @@
                     <h6 class="card-subtitle mb-2 text-muted"><%= contact.nohp %> </h6>
                     <p class="card-text"><%= contact.email %> </p>
                     <a href="/contact/edit/<%= contact.nama %>" class="btn btn-info badge">edit</a>
-                    <a href="/contact/delete/<%= contact.nama %>" class="btn btn-danger badge"
-                        onclick="return confirm('yakin akan dihapus?')">hapus</a>
+                    <!-- <a href="/contact/delete/<%= contact.nama %>" class="btn btn-danger badge"
+                        onclick="return confirm('yakin akan dihapus?')">hapus</a> -->
+                    <form action="/contact?_method=DELETE" method="POST" class="d-inline"
+                        onclick="return confirm('yakin akan dihapus?')">
+                        <input type="hidden" name="nama" value="<%= contact.nama %>">
+                        <button type="submit" class="btn btn-danger badge">hapus</button>
+                    </form>
                     <a href="/contact" class="card-link d-block mt-3">&laquo; Kembali ke Daftar Contacts</a>
                 </div>
             </div>
