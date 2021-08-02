@@ -74,9 +74,6 @@ app.get('/about', (req, res) => {
 
 // Halaman Contact
 app.get('/contact', async (req, res) => {
-	// Contact.find().then((contact) => {
-	// 	res.send(contact)
-	// })
 	const contacts = await Contact.find()
 
 	res.render('contact', {
@@ -136,7 +133,7 @@ app.delete('/contact', (req, res) => {
 
 // Halaman Ubah data
 app.get('/contact/edit/:nama', async (req, res) => {
-	const contact = await Contact.findOne({nama:req.params.nama})
+	const contact = await Contact.findOne({ nama: req.params.nama })
 	res.render('edit-contact', {
 		layout: 'layouts/main-layout',
 		title: 'Halaman Edit Contact',
@@ -148,8 +145,8 @@ app.get('/contact/edit/:nama', async (req, res) => {
 app.put(
 	'/contact',
 	[
-		body('nama').custom(async(value, { req }) => {
-			const duplikat = await Contact.findOne({nama: value})
+		body('nama').custom(async (value, { req }) => {
+			const duplikat = await Contact.findOne({ nama: value })
 			if (value !== req.body.oldNama && duplikat) {
 				throw new Error('Nama Contact sudah digunakan')
 			}
@@ -168,13 +165,16 @@ app.put(
 				contact: req.body,
 			})
 		} else {
-			Contact.updateOne({_id:req.body._id},{
-				$set: {
-					nama: req.body.nama,
-					email: req.body.email,
-					nohp: req.body.nohp,
-				},
-			}).then((result) => {
+			Contact.updateOne(
+				{ _id: req.body._id },
+				{
+					$set: {
+						nama: req.body.nama,
+						email: req.body.email,
+						nohp: req.body.nohp,
+					},
+				}
+			).then((result) => {
 				req.flash('msg', 'Data contact berhasil diubah')
 				res.redirect('/contact')
 			})
